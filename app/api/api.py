@@ -11,12 +11,15 @@ api = Blueprint('api', __name__, url_prefix="/api")
 
 UPLOAD_FOLDER = os.path.abspath("app/static/attachments")
 
+# login POST request
 @api.route('/login', methods=['POST'])
 def login():
     try:
+        # Get email and password from request
         email = request.json.get('email')
         password = request.json.get('password')
-
+        
+        # query + error checking
         query = f"(select * from users where email='{email}' and password='{password}');"
         if not all((email, password)):
             return jsonify({
@@ -24,7 +27,8 @@ def login():
                     'message': 'Both email and password are required!'
             }), 400
         user = db.engine.execute(query).first()
-
+        
+        # authentication
         if user:
             session["email"] = email
             session["user_id"] = user[0]
@@ -38,13 +42,16 @@ def login():
                 "message": "Not sure"
             }), 400
     except Exception as e:
+        # throw error
         return jsonify({
             "status": "error",
             "message": str(e)
         }), 400
 
+# logout POST request
 @api.route("/logout", methods=["POST"])
 def logout():
+    # logout
     try:
         session["email"] = None
         session["user_id"] = None
@@ -54,14 +61,17 @@ def logout():
             }, 200
         )
     except Exception as e:
+        # error
         return jsonify({
             "status": "error",
             "message": str(e)
         }), 400
 
+# add address POST request
 @api.route("/add-address", methods=["POST"])
 def add_address():
     try:
+        # get data from request
         house_number = request.json.get("house_number")
         city = request.json.get("city")
         state = request.json.get("state")
@@ -77,14 +87,17 @@ def add_address():
             }, 201
         )
     except Exception as e:
+        # error
         return jsonify({
             "status": "error",
             "message": str(e)
         }), 400
 
+# create order POST request
 @api.route("/create-order", methods=["POST"])
 def create_order():
     try:
+        # get data
         user_email = session.get("email")
         user_query = f"select * from users where email='{user_email}';"
         user = db.engine.execute(user_query).first()
@@ -98,13 +111,16 @@ def create_order():
             }, 201
         )
     except Exception as e:
+        # error
         return jsonify({
             "status": "error",
             "message": str(e)
         }), 400
 
+# help POST request
 @api.route("/submit-help", methods=["POST"])
 def submit_help():
+    # get data
     title = request.form.get("title")
     description = request.form.get("description")
     attachment = request.files.get("attachment")
@@ -123,10 +139,12 @@ def submit_help():
 
 @api.route("/download/<path:filename>")
 def download(filename):
+    # sends requested file
     return send_file(os.path.join(UPLOAD_FOLDER, filename), as_attachment=True)
 
 @api.route("/search-order")
 def search_order():
+    # get data
     order_id = request.args.get("order_id")
     user_email = session.get("email")
     user_query = f"select * from users where email='{user_email}';"
@@ -145,6 +163,7 @@ def search_order():
 @api.route("/execute", methods=["POST"])
 def execute():
     try:
+        # code to execute
         code = request.json.get("code")
         result = db.engine.execute(code).all()
         if len(result) == 0:

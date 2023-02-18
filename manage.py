@@ -15,8 +15,10 @@ from app.models.editor.company_products import CompanyProducts
 from app.models.editor.company_orders import CompanyOrders
 from app.models.editor.order_item import OrderItems
 
+# creates management group
 cli = FlaskGroup(create_app=create_app)
 
+# user data
 user_json = [
 	{
 		"name": "John Doe",
@@ -110,6 +112,7 @@ user_json = [
 	}
 ]
 
+#product data
 product_json = [
 	{
 		"name": "Sergeant Rodog AI",
@@ -190,11 +193,12 @@ product_json = [
 	}
 ]
 
+# create db
 def recreate_db():
 	db.drop_all()
 	db.create_all()
 	db.session.commit()
-
+# function to add data to db
 def seeder():
 	for user in user_json:
 		Users.create(user.get("name"), user.get("email"), user.get("password"), user.get("contact"))
@@ -248,8 +252,10 @@ def rsd():
 	# if current_app.config.get('ENV') not in ('development', 'test', 'testing'):
 	#   print("ERROR: seed-db only allowed in development and testing env.")
 	#   return
+	
+	# add stuff to database
 	recreate_db()
 	seeder()
 
 if __name__ == '__main__':
-	cli()
+	cli() # run

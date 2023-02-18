@@ -11,6 +11,7 @@ views = Blueprint('views', __name__, url_prefix="/")
 
 @views.route('/')
 @cross_origin()
+# login template
 def login():
     try:
         return render_template("/login/login.html")
@@ -22,6 +23,7 @@ def login():
 
 @views.route('/dashboard')
 @cross_origin()
+# dashboard template
 def dashboard():
     try:
         query = "select * from products;"
@@ -35,6 +37,7 @@ def dashboard():
 
 @views.route('/profile')
 @cross_origin()
+# profile template
 def profile():
     try:
         user_id = request.args.get("id")

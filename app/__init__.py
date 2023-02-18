@@ -36,6 +36,8 @@ def create_app(script_info=None):
 
     app.register_blueprint(views)
     app.register_blueprint(api)
+    
+    # errors
 
     @app.errorhandler(400)
     def bad_request(e):
